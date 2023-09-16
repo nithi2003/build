@@ -31,8 +31,8 @@ pipeline {
                                     echo "${LANGUAGE} code changes detected in the following files:"
                                     echo changedFiles.join('\n')
                                     
-                                    Add build and test steps for the specific language here
-                                    Example:
+                                    // Add build and test steps for the specific language here
+                                    // Example:
                                     if (LANGUAGE == 'cpp') {
                                         sh "g++ ${changedFiles.join(' ')} -o my_program"
                                         sh "./my_program"
