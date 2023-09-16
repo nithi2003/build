@@ -31,19 +31,19 @@ pipeline {
                                     echo "${LANGUAGE} code changes detected in the following files:"
                                     echo changedFiles.join('\n')
                                     
-                                    // Add build and test steps for the specific language here
-                                    // Example:
-                                    // if (LANGUAGE == 'cpp') {
-                                    //     sh "g++ ${changedFiles.join(' ')} -o my_program"
-                                    //     sh "./my_program"
-                                    // }
-                                    // if (LANGUAGE == 'java') {
-                                    //     sh "javac ${changedFiles.join(' ')}"
-                                    //     sh "java YourMainClass"
-                                    // }
-                                    // if (LANGUAGE == 'python') {
-                                    //     sh "python ${changedFiles.join(' ')}"
-                                    // }
+                                    Add build and test steps for the specific language here
+                                    Example:
+                                    if (LANGUAGE == 'cpp') {
+                                        sh "g++ ${changedFiles.join(' ')} -o my_program"
+                                        sh "./my_program"
+                                    }
+                                    if (LANGUAGE == 'java') {
+                                        sh "javac ${changedFiles.join(' ')}"
+                                        sh "java YourMainClass"
+                                    }
+                                    if (LANGUAGE == 'python') {
+                                        sh "python ${changedFiles.join(' ')}"
+                                    }
                                 } else {
                                     echo "${LANGUAGE} code changes detected, but no specific files found."
                                 }
