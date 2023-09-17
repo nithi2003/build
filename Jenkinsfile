@@ -40,7 +40,7 @@ pipeline {
                                         }
                                     }
                                     if (LANGUAGE == 'java') {
-                                        echo '${changedFiles}
+                                        echo '${changedFiles}'
                                         for (file in changedFiles) {
                                             def f = file.substring(5);
                                             bat "javac ${LANGUAGE}/${f}"  // Include the 'java' subdirectory
