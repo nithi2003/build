@@ -41,8 +41,9 @@ pipeline {
                                     }
                                     if (LANGUAGE == 'java') {
                                         for (file in changedFiles) {
-                                            bat "javac ${file}"
-                                            def className = file.replaceAll('.java', '')
+                                            def f = file.substring(5);
+                                            bat "javac ${f}"
+                                            def className = f.replaceAll('.java', '')
                                             bat "java ${className}"
                                         }
                                     }
