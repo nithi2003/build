@@ -34,15 +34,22 @@ pipeline {
                                     // Add build and test steps for the specific language here
                                     // Example:
                                     if (LANGUAGE == 'cpp') {
-                                        sh "g++ ${changedFiles.join(' ')} -o my_program"
-                                        sh "./my_program"
+                                        for (file in changedFiles) {
+                                            sh "g++ ${file} -o ${file}.out"
+                                            sh "./${file}.out"
+                                        }
                                     }
                                     if (LANGUAGE == 'java') {
-                                        sh "javac ${changedFiles.join(' ')}"
-                                        sh "java YourMainClass"
+                                        for (file in changedFiles) {
+                                            sh "javac ${file}"
+                                            def className = file.replaceAll('.java', '')
+                                            sh "java ${className}"
+                                        }
                                     }
                                     if (LANGUAGE == 'python') {
-                                        sh "python ${changedFiles.join(' ')}"
+                                        for (file in changedFiles) {
+                                            sh "python ${file}"
+                                        }
                                     }
                                 } else {
                                     echo "${LANGUAGE} code changes detected, but no specific files found."
@@ -61,8 +68,10 @@ List<String> getChangedFiles(String directory) {
     def changedFiles = []
     for (changeLogSet in currentBuild.changeSets) {
         for (entry in changeLogSet.getItems()) {
-            if (entry.affectedPaths.any { it.startsWith(directory) }) {
-                changedFiles.addAll(entry.affectedPaths)
+            for (path in entry.affectedPaths) {
+                if (path.startsWith(directory)) {
+                    changedFiles.add(path)
+                }
             }
         }
     }
