@@ -35,20 +35,20 @@ pipeline {
                                     // Example:
                                     if (LANGUAGE == 'cpp') {
                                         for (file in changedFiles) {
-                                            sh "g++ ${file} -o ${file}.out"
-                                            sh "./${file}.out"
+                                            bat "g++ ${file} -o ${file}.out"
+                                            bat "./${file}.out"
                                         }
                                     }
                                     if (LANGUAGE == 'java') {
                                         for (file in changedFiles) {
-                                            sh "javac ${file}"
+                                            bat "javac ${file}"
                                             def className = file.replaceAll('.java', '')
-                                            sh "java ${className}"
+                                            bat "java ${className}"
                                         }
                                     }
                                     if (LANGUAGE == 'python') {
                                         for (file in changedFiles) {
-                                            sh "python ${file}"
+                                            bat "python ${file}"
                                         }
                                     }
                                 } else {
