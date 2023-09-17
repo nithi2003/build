@@ -42,11 +42,12 @@ pipeline {
                                     if (LANGUAGE == 'java') {
                                         for (file in changedFiles) {
                                             def f = file.substring(5);
-                                            bat "javac ${f}"
+                                            bat "javac ${LANGUAGE}/${f}"  // Include the 'java' subdirectory
                                             def className = f.replaceAll('.java', '')
                                             bat "java ${className}"
                                         }
                                     }
+
                                     if (LANGUAGE == 'python') {
                                         for (file in changedFiles) {
                                             bat "python ${file}"
