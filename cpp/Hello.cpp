@@ -7,6 +7,7 @@ int main()
 {
     // Prints hello world
     cout << "Hello World";
+    cout <<"Hello Nithin";
  
     return 0;
 }
