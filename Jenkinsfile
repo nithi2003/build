@@ -36,7 +36,7 @@ pipeline {
                                     if (LANGUAGE == 'cpp') {
                                         for (file in changedFiles) {
                                             bat "g++ ${file} -o ${file}.out"
-                                            bat "./${file}.out"
+                                            bat ".\\${file}.out"
                                         }
                                     }
                                     if (LANGUAGE == 'java') {
