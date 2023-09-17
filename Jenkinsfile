@@ -44,7 +44,7 @@ pipeline {
                                             def f = file.substring(5);
                                             bat "javac ${LANGUAGE}/${f}"  // Include the 'java' subdirectory
                                             def className = f.replaceAll('.java', '')
-                                            bat "java ${className}"
+                                            bat "java ${LANGUAGE}/${className}"
                                         }
                                     }
 
