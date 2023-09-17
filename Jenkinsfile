@@ -40,13 +40,12 @@ pipeline {
                                         }
                                     }
                                     if (LANGUAGE == 'java') {
-                                        echo '${changedFiles}'
                                         for (file in changedFiles) {
                                             def f = file.substring(5);
                                             bat "javac ${LANGUAGE}/${f}"  // Include the 'java' subdirectory
-                                            def className = f.replaceAll('.java', '')
-                                            bat 'cd java'
-                                            bat "java ${LANGUAGE}/${className}"
+                                            def choice = file.substring(5);
+                                             def className = choice.replaceAll('.java', '')
+                                            bat "java ${className}"
                                         }
                                     }
 
