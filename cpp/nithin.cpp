@@ -7,7 +7,7 @@ int main()
 {
     // Prints hello world
     int a=5;
-    cout <<"last";
+    syssdkf
  
     return 0;
 }
