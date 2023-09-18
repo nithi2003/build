@@ -1,2 +1,1 @@
-print("ntiihn")
-echo 
+print("ntiihn") 
