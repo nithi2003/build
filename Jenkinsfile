@@ -45,7 +45,7 @@ pipeline {
                     // Print compilation status
                     echo "Compilation Status:"
                     compilationStatus.each { fileName, status ->
-                        echo "${fileName}: ${status == 0 ? 'Success' : 'Failure'}"
+                        echo "${fileName}: ${status == 0 ? 'Yes' : 'No'}"
                     }
                 }
             }
