@@ -21,7 +21,7 @@ pipeline {
                         files.each { file ->
                             def fileName = file.name
                             if (fileExists("${folderPath}/${fileName}")) {
-                                def result = sh(script: "${command} ${folderPath}/${fileName}", returnStatus: true)
+                                def result = bat(script: "${command} ${folderPath}\\${fileName}", returnStatus: true)
                                 echo "compiled successfully"
                                 compilationStatus[fileName] = result
                             }
