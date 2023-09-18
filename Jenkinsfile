@@ -8,8 +8,6 @@ pipeline {
                 checkout scm
             }
         }
-        
-        stages {
         stage('Compile and Run') {
             steps {
                 script {
@@ -68,7 +66,6 @@ pipeline {
             }
         }
     }
-}
 @NonCPS
 List<String> getChangedFiles(String directory) {
     def changedFiles = []
