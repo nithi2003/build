@@ -1,8 +1,6 @@
 public class N{
     public static void main(String args[]) {
-            System.out.println("Nithin pipeline!");
-            System.out.println("3rd");
-            System.out.println("3last");
+            System.out.println("Hii nithin this is changed");
 
         
 }
