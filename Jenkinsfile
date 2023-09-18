@@ -1,6 +1,6 @@
 pipeline {
     agent any
-    
+
     stages {
         stage('Checkout') {
             steps {
@@ -66,17 +66,4 @@ pipeline {
             }
         }
     }
-@NonCPS
-List<String> getChangedFiles(String directory) {
-    def changedFiles = []
-    for (changeLogSet in currentBuild.changeSets) {
-        for (entry in changeLogSet.getItems()) {
-            for (path in entry.affectedPaths) {
-                if (path.startsWith(directory)) {
-                    changedFiles.add(path)
-                }
-            }
-        }
-    }
-    return changedFiles
 }
