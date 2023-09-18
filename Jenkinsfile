@@ -27,40 +27,25 @@ pipeline {
                         }
                     }
 
-                    // Determine if new files have been added
-                    def changeLog = currentBuild.rawBuild.getChangeSets().getItems()
-                    def newFilesAdded = false
-
-                    changeLog.each { entry ->
-                        if (entry.getAffectedPaths().find { it.startsWith(folderPath + "/") }) {
-                            newFilesAdded = true
-                        }
+                    // C++ Programs
+                    if (folderPath == 'cpp') {
+                        runCommandsForFilesInFolder("g++ -o")
+                    }
+                    
+                    // Java Programs
+                    if (folderPath == 'java') {
+                        runCommandsForFilesInFolder("javac -d")
                     }
 
-                    // Only run the pipeline if new files have been added or existing files modified
-                    if (newFilesAdded) {
-                        // C++ Programs
-                        if (folderPath == 'cpp') {
-                            runCommandsForFilesInFolder("g++ -o")
-                        }
+                    // Python Programs
+                    if (folderPath == 'python') {
+                        runCommandsForFilesInFolder("python")
+                    }
 
-                        // Java Programs
-                        if (folderPath == 'java') {
-                            runCommandsForFilesInFolder("javac -d")
-                        }
-
-                        // Python Programs
-                        if (folderPath == 'python') {
-                            runCommandsForFilesInFolder("python")
-                        }
-
-                        // Print compilation status
-                        echo "Compilation Status:"
-                        compilationStatus.each { fileName, status ->
-                            echo "${fileName}: ${status == 0 ? 'Success' : 'Failure'}"
-                        }
-                    } else {
-                        echo "No new files or changes detected in ${folderPath}. Skipping pipeline execution."
+                    // Print compilation status
+                    echo "Compilation Status:"
+                    compilationStatus.each { fileName, status ->
+                        echo "${fileName}: ${status == 0 ? 'Success' : 'Failure'}"
                     }
                 }
             }
