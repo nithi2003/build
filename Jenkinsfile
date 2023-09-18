@@ -8,62 +8,69 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Compile and Run') {
+
+        stage('Compile and Test') {
             matrix {
                 axes {
                     axis {
-                        name 'LANG'
-                        values 'python', 'cpp', 'java'
+                        name 'LANGUAGE'
+                        values 'cpp', 'java', 'python'
                     }
                 }
                 stages {
-                    stage('Build') {
+                    stage('Compile ${LANGUAGE}') {
                         when {
-                            changeset "**/${env.LANG}/**"
+                            changeset "${LANGUAGE}/**"
                         }
                         steps {
                             script {
-                                def folderPath = env.LANG
-                                def compilationStatus = [:]
+                                def languageDir = "${LANGUAGE}/"
+                                def changedFiles = getChangedFiles(languageDir)
 
-                                // Function to run a command for each file in a folder
-                                def runCommandsForFilesInFolder = { command ->
-                                    def files = findFiles(glob: "${folderPath}/*.*")
+                                if (changedFiles) {
+                                    echo "${LANGUAGE} code changes detected in the following files:"
+                                    echo changedFiles.join('\n')
 
-                                    for (def file : files) {
-                                        def fileName = file.name
-                                        if (fileExists("${folderPath}/${fileName}")) {
-                                            def result = bat(script: "${command} ${folderPath}\\${fileName}", returnStatus: true, returnStdout: true)
-                                            compilationStatus[fileName] = result
+                                    // Compile and test steps for the specific language
+                                    def compilationStatus = [:]
+
+                                    if (LANGUAGE == 'cpp') {
+                                        for (file in changedFiles) {
+                                            def outputName = file.replaceAll('\\.cpp$', '.out')
+                                            def compileCmd = "g++ ${file} -o ${outputName}"
+                                            def result = bat(script: compileCmd, returnStatus: true)
+                                            compilationStatus[file] = result
                                         }
                                     }
-                                }
 
-                                // C++ Programs
-                                if (folderPath == 'cpp') {
-                                    runCommandsForFilesInFolder("g++ -o")
-                                }
-
-                                // Java Programs
-                                if (folderPath == 'java') {
-                                    runCommandsForFilesInFolder("javac -d .")
-                                }
-
-                                // Python Programs
-                                if (folderPath == 'python') {
-                                    runCommandsForFilesInFolder("python")
-                                }
-
-                                // Print compilation status
-                                echo "Compilation Status for ${folderPath}:"
-                                for (def fileName : compilationStatus.keySet()) {
-                                    def status = compilationStatus[fileName]
-                                    if (status == 0) {
-                                        echo "${fileName}: Yes"
-                                    } else {
-                                        echo "${fileName}: No"
-                                        currentBuild.result = 'FAILURE' // Mark the build as failed
+                                    if (LANGUAGE == 'java') {
+                                        for (file in changedFiles) {
+                                            def className = file.replaceAll('\\.java$', '')
+                                            def compileCmd = "javac ${file}"
+                                            def result = bat(script: compileCmd, returnStatus: true)
+                                            compilationStatus[className] = result
+                                        }
                                     }
+
+                                    if (LANGUAGE == 'python') {
+                                        for (file in changedFiles) {
+                                            def result = bat(script: "python ${file}", returnStatus: true)
+                                            compilationStatus[file] = result
+                                        }
+                                    }
+
+                                    // Print compilation status
+                                    echo "Compilation Status for ${LANGUAGE}:"
+                                    compilationStatus.each { fileName, status ->
+                                        if (status == 0) {
+                                            echo "${fileName}: Compiled successfully"
+                                        } else {
+                                            echo "${fileName}: Compilation failed"
+                                            currentBuild.result = 'FAILURE' // Mark the build as failed
+                                        }
+                                    }
+                                } else {
+                                    echo "${LANGUAGE} code changes detected, but no specific files found."
                                 }
                             }
                         }
@@ -72,4 +79,19 @@ pipeline {
             }
         }
     }
+}
+
+@NonCPS
+List<String> getChangedFiles(String directory) {
+    def changedFiles = []
+    for (changeLogSet in currentBuild.changeSets) {
+        for (entry in changeLogSet.getItems()) {
+            for (path in entry.affectedPaths) {
+                if (path.startsWith(directory)) {
+                    changedFiles.add(path)
+                }
+            }
+        }
+    }
+    return changedFiles
 }
