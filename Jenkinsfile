@@ -21,8 +21,7 @@ pipeline {
                         files.each { file ->
                             def fileName = file.name
                             if (fileExists("${folderPath}/${fileName}")) {
-                                def result = bat(script: "${command} ${folderPath}\\${fileName}", returnStatus: true)
-                                echo "compiled successfully"
+                                def result = bat(script: "${command} ${folderPath}\\${fileName}", returnStatus: true, returnStdout: true)
                                 compilationStatus[fileName] = result
                             }
                         }
@@ -46,7 +45,11 @@ pipeline {
                     // Print compilation status
                     echo "Compilation Status:"
                     compilationStatus.each { fileName, status ->
-                        echo "${fileName}: ${status == 0 ? 'Yes' : 'No'}"
+                        if (status == 0) {
+                            echo "${fileName}: Yes"
+                        } else {
+                            echo "${fileName}: No"
+                        }
                     }
                 }
             }
