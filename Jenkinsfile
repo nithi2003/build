@@ -9,63 +9,66 @@ pipeline {
             }
         }
         
-        stage('Build and Test') {
-            matrix {
-                axes {
-                    axis {
-                        name 'LANGUAGE'
-                        values 'cpp', 'java', 'python'
-                    }
-                }
-                stages {
-                    stage('Build ${LANGUAGE}') {
-                        when {
-                            changeset "${LANGUAGE}/**"
-                        }
-                        steps {
-                            script {
-                                def languageDir = "${LANGUAGE}/"
-                                def changedFiles = getChangedFiles(languageDir)
-                                
-                                if (changedFiles) {
-                                    echo "${LANGUAGE} code changes detected in the following files:"
-                                    echo changedFiles.join('\n')
-                                    
-                                    // Add build and test steps for the specific language here
-                                    // Example:
-                                    if (LANGUAGE == 'cpp') {
-                                        for (file in changedFiles) {
-                                            bat "g++ ${file} -o ${file}.out"
-                                            bat ".\\${file}.out"
-                                        }
-                                    }
-                                    if (LANGUAGE == 'java') {
-                                        for (file in changedFiles) {
-                                            def f = file.substring(5);
-                                            bat "javac ${LANGUAGE}/${f}"  // Include the 'java' subdirectory
-                                            def choice = file.substring(5);
-                                             def className = choice.replaceAll('.java', '')
-                                            bat "java ${className}"
-                                        }
-                                    }
+        stages {
+        stage('Compile and Run') {
+            steps {
+                script {
+                    def folderPath = env.BRANCH_NAME.toLowerCase()
+                    def compilationStatus = [:]
 
-                                    if (LANGUAGE == 'python') {
-                                        for (file in changedFiles) {
-                                            bat "python ${file}"
-                                        }
-                                    }
-                                } else {
-                                    echo "${LANGUAGE} code changes detected, but no specific files found."
-                                }
+                    // Function to run a command for each file in a folder
+                    def runCommandsForFilesInFolder = { command ->
+                        def files = findFiles(glob: "${folderPath}/*.*")
+
+                        files.each { file ->
+                            def fileName = file.name
+                            if (fileExists("${folderPath}/${fileName}")) {
+                                def result = sh(script: "${command} ${folderPath}/${fileName}", returnStatus: true)
+                                compilationStatus[fileName] = result
                             }
                         }
+                    }
+
+                    // Determine if new files have been added
+                    def changeLog = currentBuild.rawBuild.getChangeSets().getItems()
+                    def newFilesAdded = false
+
+                    changeLog.each { entry ->
+                        if (entry.getAffectedPaths().find { it.startsWith(folderPath + "/") }) {
+                            newFilesAdded = true
+                        }
+                    }
+
+                    // Only run the pipeline if new files have been added or existing files modified
+                    if (newFilesAdded) {
+                        // C++ Programs
+                        if (folderPath == 'cpp') {
+                            runCommandsForFilesInFolder("g++ -o")
+                        }
+
+                        // Java Programs
+                        if (folderPath == 'java') {
+                            runCommandsForFilesInFolder("javac -d")
+                        }
+
+                        // Python Programs
+                        if (folderPath == 'python') {
+                            runCommandsForFilesInFolder("python")
+                        }
+
+                        // Print compilation status
+                        echo "Compilation Status:"
+                        compilationStatus.each { fileName, status ->
+                            echo "${fileName}: ${status == 0 ? 'Success' : 'Failure'}"
+                        }
+                    } else {
+                        echo "No new files or changes detected in ${folderPath}. Skipping pipeline execution."
                     }
                 }
             }
         }
     }
 }
-
 @NonCPS
 List<String> getChangedFiles(String directory) {
     def changedFiles = []
