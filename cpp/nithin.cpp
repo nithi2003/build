@@ -7,7 +7,7 @@ int main()
 {
     // Prints hello world
     int a=5;
-    cout <<"nto this";
+    cout <<"last";
  
     return 0;
 }
