@@ -1,3 +1,1 @@
-print("abcdefghijkl")
-print("change")
-print("Second change")
+print("a")
