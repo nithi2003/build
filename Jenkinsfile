@@ -18,7 +18,7 @@ pipeline {
                     def runCommandsForFilesInFolder = { command ->
                         def files = findFiles(glob: "${folderPath}/*.*")
 
-                        files.each { file ->
+                        for (def file : files) {
                             def fileName = file.name
                             if (fileExists("${folderPath}/${fileName}")) {
                                 def result = bat(script: "${command} ${folderPath}\\${fileName}", returnStatus: true, returnStdout: true)
@@ -44,7 +44,8 @@ pipeline {
 
                     // Print compilation status
                     echo "Compilation Status:"
-                    compilationStatus.each { fileName, status ->
+                    for (def fileName : compilationStatus.keySet()) {
+                        def status = compilationStatus[fileName]
                         if (status == 0) {
                             echo "${fileName}: Yes"
                         } else {
